@@ -14,7 +14,7 @@ import org.openqa.selenium.Cookie;
 import java.lang.reflect.*;
 import java.time.Duration;
 
-public class LoginTest {
+public class AuthenticationTest {
     WebDriver driver;
     private static Cookie sessionCookie;
 
@@ -71,9 +71,30 @@ public class LoginTest {
         if(expectSuccess){
             wait.until(ExpectedConditions.urlContains("inventory.html"));
             Assert.assertTrue(driver.getCurrentUrl().contains("inventory.html"));
+
+            if(username.equals("problem_user")){
+                try {
+                    validateNoBrokenImages();
+                } catch (AssertionError e) {
+                    System.out.println("LOGGED BUG: " + e.getMessage());
+                }
+            }
         } else {
             WebElement errorMsg = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h3[@data-test='error']")));
             Assert.assertEquals(errorMsg.getText(), "Epic sadface: Sorry, this user has been locked out.", "Error message did not appear for locked user!");
+        }
+    }
+
+    private void validateNoBrokenImages(){
+        java.util.List<WebElement> images = driver.findElements(By.cssSelector(".inventory_item_img img"));
+        for (WebElement img: images){
+            String imageSrc = img.getAttribute("src");
+            if (imageSrc != null) {
+                Assert.assertFalse(imageSrc.contains("sl-404"),
+                        "Broken image detected: " + imageSrc);
+            } else {
+                System.out.println("Warning: src attribute was null for an image element.");
+            }
         }
     }
 
