@@ -1,25 +1,19 @@
 package tests;
 
-import io.github.bonigarcia.wdm.WebDriverManager;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
+import base.BaseTest;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
-import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.openqa.selenium.*;
 import org.openqa.selenium.Cookie;
 import pages.LoginPage;
-
 import java.lang.reflect.*;
 import java.time.Duration;
 
-public class AuthenticationTest {
-    WebDriver driver;
+public class AuthenticationTest extends BaseTest {
     private static Cookie sessionCookie;
 
     @DataProvider(name = "loginData")
@@ -35,13 +29,7 @@ public class AuthenticationTest {
     }
 
     @BeforeMethod
-    public void setUp(Method method){
-        WebDriverManager.chromedriver().setup();
-        ChromeOptions options = new ChromeOptions();
-        options.addArguments("--incognito");
-        driver = new ChromeDriver(options);
-        driver.manage().window().maximize();
-
+    public void specificSetUp(Method method){
         if (method.getName().equals("testLogout")){
             driver.get("https://www.saucedemo.com/");
             if(sessionCookie == null) {
@@ -63,7 +51,6 @@ public class AuthenticationTest {
         driver.findElement(By.id("login-button")).click();
     }
 
-
     @Test(dataProvider = "loginData")
     public void testLogin(String username, String password, boolean expectSuccess){
         LoginPage loginPage = new LoginPage(driver);
@@ -74,14 +61,7 @@ public class AuthenticationTest {
         if(expectSuccess){
             wait.until(ExpectedConditions.urlContains("inventory.html"));
             Assert.assertTrue(driver.getCurrentUrl().contains("inventory.html"));
-
-            if(username.equals("problem_user")){
-                try {
-                    validateNoBrokenImages();
-                } catch (AssertionError e) {
-                    System.out.println("LOGGED BUG: " + e.getMessage());
-                }
-            }
+            validateNoBrokenImages();
         } else {
             WebElement errorMsg = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h3[@data-test='error']")));
             Assert.assertEquals(errorMsg.getText(), "Epic sadface: Sorry, this user has been locked out.", "Error message did not appear for locked user!");
@@ -115,12 +95,5 @@ public class AuthenticationTest {
         Assert.assertEquals(driver.getCurrentUrl(), "https://www.saucedemo.com/");
         boolean isLoginButtonPresent = driver.findElement(By.id("login-button")).isDisplayed();
         Assert.assertTrue(isLoginButtonPresent,"Login button was not found after logout!");
-}
-
-    @AfterMethod
-    public void tearDown(){
-        if(driver != null){
-            driver.quit();
-        }
     }
 }
