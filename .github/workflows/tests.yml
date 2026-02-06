@@ -14,19 +14,19 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Cache JDK 25
+      - name: Cache JDK 21
         uses: actions/cache@v4
         id: jdk-cache
         with:
           path: ${{ runner.tool_cache }}/Java_Temurin_jdk
-          key: jdk-25-temurin-${{ runner.os }}-${{ hashFiles('pom.xml') }}
+          key: jdk-21-temurin-${{ runner.os }}-${{ hashFiles('pom.xml') }}
           restore-keys: |
-            jdk-25-temurin-${{ runner.os }}-
+            jdk-21-temurin-${{ runner.os }}-
 
-      - name: Set up JDK 25
+      - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
-          java-version: '25'
+          java-version: '21'
           distribution: 'temurin'
           cache: 'maven'
 
