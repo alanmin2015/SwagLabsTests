@@ -19,17 +19,17 @@ import java.util.List;
 public class InventoryTest extends BaseTest {
     @BeforeMethod
     public void setUpInventoryTest(){
-        driver.findElement(By.id("user-name")).sendKeys("standard_user");
-        driver.findElement(By.name("password")).sendKeys("secret_sauce");
-        driver.findElement(By.id("login-button")).click();
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+        getDriver().findElement(By.id("user-name")).sendKeys("standard_user");
+        getDriver().findElement(By.name("password")).sendKeys("secret_sauce");
+        getDriver().findElement(By.id("login-button")).click();
+        WebDriverWait wait = new WebDriverWait(getDriver(), Duration.ofSeconds(5));
         wait.until(ExpectedConditions.urlContains("inventory.html"));
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("header_label")));
     }
 
     @Test
     public void testProductSorting(){
-        InventoryPage inventoryPage = new InventoryPage(driver);
+        InventoryPage inventoryPage = new InventoryPage(getDriver());
 
         inventoryPage.sortByPriceLow();
         List<WebElement> priceElements= inventoryPage.getAllPriceElements();
@@ -47,7 +47,7 @@ public class InventoryTest extends BaseTest {
 
     @Test
     public void testE2EShoppingCart(){
-        InventoryPage inventoryPage = new InventoryPage(driver);
+        InventoryPage inventoryPage = new InventoryPage(getDriver());
         inventoryPage.addShoppingCart();
         inventoryPage.goToCart();
         inventoryPage.fillCheckoutInfo("Alan", "Test", "M1M 1M1 ");

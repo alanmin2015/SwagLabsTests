@@ -1,14 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
-<suite name="Sauce Demo Suite">
+<suite name="Sauce Demo Suite" parallel="tests" thread-count="2">
 
     <listeners>
         <listener class-name="listeners.TestListener" />
     </listeners>
 
-    <test name="All Automation Tests">
+    <test name="Authentication Tests">
         <classes>
             <class name="tests.AuthenticationTest" />
+        </classes>
+    </test>
+
+    <test name="Inventory Tests">
+        <classes>
             <class name="tests.InventoryTest" />
         </classes>
     </test>

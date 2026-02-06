@@ -14,25 +14,35 @@ import java.lang.reflect.Method;
 
 @Listeners(TestListener.class)
 public class BaseTest {
-    protected WebDriver driver;
+    protected static ThreadLocal<WebDriver> threadDriver = new ThreadLocal<>();
 
-    public WebDriver getDriver() {
-        return driver;
-    }
+
     @BeforeMethod
     public void setUp(Method method){
         WebDriverManager.chromedriver().setup();
         ChromeOptions options = new ChromeOptions();
+
         options.addArguments("--incognito");
-        driver = new ChromeDriver(options);
+        options.addArguments("--headless=new");
+        options.addArguments("--no-sandbox");
+        options.addArguments("--disable-dev-shm-usage");
+        options.addArguments("--window-size=1920,1080");
+
+        WebDriver driver = new ChromeDriver(options);
+        threadDriver.set(driver);
         driver.manage().window().maximize();
         driver.get("https://www.saucedemo.com/");
     }
 
+    public WebDriver getDriver() {
+        return threadDriver.get();
+    }
+
+
     @AfterMethod
     public void tearDown(ITestResult result){
-        if (driver != null && result.getStatus() != ITestResult.FAILURE) {
-            driver.quit();
+        if (getDriver() != null && result.getStatus() != ITestResult.FAILURE) {
+            getDriver().quit();
         }
     }
 }
