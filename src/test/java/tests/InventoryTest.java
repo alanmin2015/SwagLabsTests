@@ -1,3 +1,5 @@
+package tests;
+
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -10,6 +12,7 @@ import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import pages.InventoryPage;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -37,11 +40,10 @@ public class InventoryTest {
 
     @Test
     public void testProductSorting(){
-        driver.findElement(By.className("product_sort_container")).click();
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
-        wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//option[@value='lohi']"))).click();
+        InventoryPage inventoryPage = new InventoryPage(driver);
 
-        List<WebElement> priceElements= driver.findElements(By.className("inventory_item_price"));
+        inventoryPage.sortByPriceLow();
+        List<WebElement> priceElements= inventoryPage.getAllPriceElements();
 
         List<Double> actualPrices = new ArrayList<>();
 
@@ -58,20 +60,12 @@ public class InventoryTest {
 
     @Test
     public void testE2EShoppingCart(){
-        driver.findElement(By.id("add-to-cart-sauce-labs-bike-light")).click();
-        driver.findElement(By.id("add-to-cart-sauce-labs-backpack")).click();
-        driver.findElement(By.className("shopping_cart_link")).click();
-
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
-        wait.until(ExpectedConditions.elementToBeClickable(By.id("checkout"))).click();
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("continue")));
-
-        driver.findElement(By.id("first-name")).sendKeys("Alan");
-        driver.findElement(By.id("last-name")).sendKeys("Test");
-        driver.findElement(By.id("postal-code")).sendKeys("M1A 0S2");
-        driver.findElement(By.id("continue")).click();
-        wait.until(ExpectedConditions.elementToBeClickable(By.id("finish"))).click();
-        Assert.assertTrue(driver.findElement(By.xpath("//h2[text()='Thank you for your order!']")).isDisplayed(),"Order process is failed");
+        InventoryPage inventoryPage = new InventoryPage(driver);
+        inventoryPage.addShoppingCart();
+        inventoryPage.goToCart();
+        inventoryPage.fillCheckoutInfo("Alan", "Test", "M1M 1M1 ");
+        inventoryPage.clickFinish();
+        Assert.assertTrue(inventoryPage.isOrderSuccessful(),"Order process is failed");
     }
 
     @AfterMethod

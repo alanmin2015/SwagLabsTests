@@ -1,3 +1,5 @@
+package tests;
+
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -11,6 +13,8 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.openqa.selenium.*;
 import org.openqa.selenium.Cookie;
+import pages.LoginPage;
+
 import java.lang.reflect.*;
 import java.time.Duration;
 
@@ -62,9 +66,8 @@ public class AuthenticationTest {
 
     @Test(dataProvider = "loginData")
     public void testLogin(String username, String password, boolean expectSuccess){
-        driver.findElement(By.id("user-name")).sendKeys(username);
-        driver.findElement(By.name("password")).sendKeys(password);
-        driver.findElement(By.id("login-button")).click();
+        LoginPage loginPage = new LoginPage(driver);
+        loginPage.login(username, password);
 
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
 
