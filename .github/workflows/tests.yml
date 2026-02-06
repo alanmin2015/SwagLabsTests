@@ -31,7 +31,7 @@ jobs:
           cache: 'maven'
 
       - name: Run Tests with Maven
-        run: mvn clean test -DsuiteXmlFile=testing.xml
+        run: mvn clean test -B --no-transfer-progress -DsuiteXmlFile=testing.xml
 
       - name: Upload Screenshots on Failure
         if: failure()
